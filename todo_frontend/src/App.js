@@ -1,47 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import './index.css';
+import { TodoProvider } from './context/TodoContext';
+import TodoInput from './components/TodoInput';
+import TodoList from './components/TodoList';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // PUBLIC_INTERFACE
 function App() {
+  /** Root app with theme toggle and todo features */
   const [theme, setTheme] = useState('light');
 
-  // Effect to apply theme to document element
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
   // PUBLIC_INTERFACE
   const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
   };
 
   return (
     <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+      <header className="app-header">
+        <div className="container">
+          <div className="header-row">
+            <h1 className="title">Todo</h1>
+            <button
+              className="theme-toggle"
+              onClick={toggleTheme}
+              aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
+            </button>
+          </div>
+          <p className="subtitle">Manage tasks efficiently.</p>
+        </div>
       </header>
+      <main className="container">
+        <ErrorBoundary>
+          <TodoProvider>
+            <section className="card">
+              <TodoInput />
+              <TodoList />
+            </section>
+          </TodoProvider>
+        </ErrorBoundary>
+      </main>
+      <footer className="container footer subtle">
+        <small>
+          {process.env.REACT_APP_BACKEND_URL
+            ? `Backend: ${process.env.REACT_APP_BACKEND_URL}`
+            : 'Local mode (localStorage)'}
+        </small>
+      </footer>
     </div>
   );
 }
