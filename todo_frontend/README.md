@@ -4,7 +4,7 @@ A modern, lightweight React todo app with add, edit, delete, and complete featur
 
 ## Features
 
-- Add, edit (inline), delete, and toggle completion
+- Add, edit (inline), delete (with confirmation), and toggle completion
 - Keyboard accessible (Enter/Escape, labels, focus states)
 - Error boundary to isolate UI errors
 - Responsive layout, modern light theme with brand accents
@@ -76,6 +76,14 @@ src/
   index.js
   index.css
 ```
+
+## Delete Confirmation
+
+When deleting a task, the app shows a confirmation dialog:
+- Title: "Delete task?"
+- Body: "This action cannot be undone."
+- Buttons: "Cancel" and a destructive "Delete"
+- Keyboard accessible: Esc to cancel; Enter confirms; focus is trapped within the dialog while open.
 
 ## Accessibility
 

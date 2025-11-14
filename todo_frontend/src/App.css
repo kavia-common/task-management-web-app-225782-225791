@@ -230,6 +230,57 @@ button {
   border-radius: 8px;
 }
 
+/* Modal dialog */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in oklab, black, transparent 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 50;
+}
+
+.modal {
+  width: 100%;
+  max-width: 420px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow:
+    0 5px 30px rgba(0,0,0,0.25),
+    0 8px 24px -16px rgba(59,130,246,0.3);
+}
+
+.modal-title {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+}
+
+.modal-body {
+  margin: 0 0 16px 0;
+  color: var(--text-muted);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Solid danger button to indicate destructive action */
+.btn-danger-solid {
+  background: linear-gradient(135deg, var(--danger), color-mix(in oklab, var(--danger), white 20%));
+  color: white;
+  border: none;
+  box-shadow: 0 4px 14px -6px color-mix(in oklab, var(--danger), black 20%);
+}
+.btn-danger-solid:hover {
+  transform: translateY(-1px);
+}
+
 /* Accessibility helpers */
 .sr-only {
   position: absolute !important;

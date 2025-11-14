@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTodos } from '../context/TodoContext';
+import ConfirmDialog from './ConfirmDialog';
 
 /**
  * A single todo row with toggle, edit, and delete actions.
@@ -8,6 +9,7 @@ export default function TodoItem({ todo }) {
   const { toggleTodo, editTodo, removeTodo } = useTodos();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(todo.title);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -32,62 +34,86 @@ export default function TodoItem({ todo }) {
     }
   };
 
+  const onDeleteClick = () => {
+    setConfirmOpen(true);
+  };
+
+  const handleConfirm = async () => {
+    await removeTodo(todo.id);
+    setConfirmOpen(false);
+  };
+
+  const handleCancel = () => {
+    setConfirmOpen(false);
+  };
+
   return (
-    <li className="todo-item" role="listitem" aria-label={`Task: ${todo.title}`}>
-      <div className="todo-left">
-        <input
-          id={`toggle-${todo.id}`}
-          type="checkbox"
-          checked={!!todo.completed}
-          onChange={() => toggleTodo(todo.id)}
-          aria-checked={!!todo.completed}
-          aria-label={`Mark "${todo.title}" as ${todo.completed ? 'incomplete' : 'complete'}`}
-        />
-        {isEditing ? (
+    <>
+      <li className="todo-item" role="listitem" aria-label={`Task: ${todo.title}`}>
+        <div className="todo-left">
           <input
-            ref={inputRef}
-            type="text"
-            value={title}
-            className="edit-input"
-            onChange={(e) => setTitle(e.target.value)}
-            onKeyDown={onKeyDown}
-            onBlur={onSave}
-            aria-label="Edit task title"
+            id={`toggle-${todo.id}`}
+            type="checkbox"
+            checked={!!todo.completed}
+            onChange={() => toggleTodo(todo.id)}
+            aria-checked={!!todo.completed}
+            aria-label={`Mark "${todo.title}" as ${todo.completed ? 'incomplete' : 'complete'}`}
           />
-        ) : (
-          <span
-            className={`title ${todo.completed ? 'completed' : ''}`}
-            tabIndex={0}
-            onDoubleClick={() => setIsEditing(true)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') setIsEditing(true);
-            }}
-            aria-label={`${todo.title}${todo.completed ? ', completed' : ''}`}
+          {isEditing ? (
+            <input
+              ref={inputRef}
+              type="text"
+              value={title}
+              className="edit-input"
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={onKeyDown}
+              onBlur={onSave}
+              aria-label="Edit task title"
+            />
+          ) : (
+            <span
+              className={`title ${todo.completed ? 'completed' : ''}`}
+              tabIndex={0}
+              onDoubleClick={() => setIsEditing(true)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') setIsEditing(true);
+              }}
+              aria-label={`${todo.title}${todo.completed ? ', completed' : ''}`}
+            >
+              {todo.title}
+            </span>
+          )}
+        </div>
+        <div className="todo-actions">
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => setIsEditing(v => !v)}
+            aria-label={isEditing ? 'Save changes' : `Edit "${todo.title}"`}
+            title={isEditing ? 'Save' : 'Edit'}
           >
-            {todo.title}
-          </span>
-        )}
-      </div>
-      <div className="todo-actions">
-        <button
-          type="button"
-          className="btn-secondary"
-          onClick={() => setIsEditing(v => !v)}
-          aria-label={isEditing ? 'Save changes' : `Edit "${todo.title}"`}
-          title={isEditing ? 'Save' : 'Edit'}
-        >
-          {isEditing ? 'Save' : 'Edit'}
-        </button>
-        <button
-          type="button"
-          className="btn-danger"
-          onClick={() => removeTodo(todo.id)}
-          aria-label={`Delete "${todo.title}"`}
-          title="Delete"
-        >
-          Delete
-        </button>
-      </div>
-    </li>
+            {isEditing ? 'Save' : 'Edit'}
+          </button>
+          <button
+            type="button"
+            className="btn-danger"
+            onClick={onDeleteClick}
+            aria-label={`Delete "${todo.title}"`}
+            title="Delete"
+          >
+            Delete
+          </button>
+        </div>
+      </li>
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete task?"
+        body="This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
+    </>
   );
 }
